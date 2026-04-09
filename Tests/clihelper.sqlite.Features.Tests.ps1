@@ -5,7 +5,7 @@
         If the QA tests are run outside of the build script (e.g with Invoke-Pester)
         the parent scope has not set the variable $ProjectName.
     #>
-    if (-not $ProjectName)
+    if (!$ProjectName)
     {
         # Assuming project folder name is project name.
         $ProjectName = Get-SamplerProjectName -BuildRoot $projectPath
@@ -39,7 +39,7 @@ Describe 'Create table and list object in memory db' -Tag 'DB' {
 
     It 'Should be able to create a table' -Skip:$skipTest {
         # Invoke-PSqliteQuery -SqliteConnection $c -CommandText "SELECT * FROM characters;" -keepAlive
-        {Invoke-PSqliteQuery -SqliteConnection $c -CommandText $query -keepAlive} |  Should -Not -Throw
+        {Invoke-PSqliteQuery -SqliteConnection $c -CommandText $query -keepAlive} |  Should !-Throw
     }
 
     It 'Should have the created table in the list' {
@@ -57,7 +57,7 @@ Describe 'Create table and list object in memory db' -Tag 'DB' {
         $result | Should -BeNullOrEmpty
 
         $result = Invoke-PSqliteQuery -SqliteConnection $c -CommandText "SELECT * FROM characters;" -keepAlive
-        $result | Should -Not -BeNullOrEmpty
+        $result | Should !-BeNullOrEmpty
         $result.Name | Should -be 'John'
         # Invoke-PSqliteQuery -SqliteConnection $c -CommandText "SELECT * FROM characters;" -keepAlive -As PSCustomObject
         # Invoke-PSqliteQuery -SqliteConnection $c -CommandText "SELECT * FROM characters;" -keepAlive -As OrderedDictionary

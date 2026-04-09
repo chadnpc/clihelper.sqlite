@@ -94,7 +94,7 @@ function Set-PSqliteRow
 
     begin
     {
-        if (-not $SqliteConnection)
+        if (!$SqliteConnection)
         {
             $SqliteConnection = New-PSqliteConnection -ConnectionString $SqliteDBConfig.ConnectionString
         }
@@ -126,7 +126,7 @@ function Set-PSqliteRow
         $null = $sb.AppendLine(' SET ')
         $null = $sb.AppendLine(($RowData.Keys.ForEach{ '{0} = @{0}' -f $_ } -join ', '))
         $null = $sb.AppendLine(' WHERE 1=1')
-        if (-not $CaseSensitive)
+        if (!$CaseSensitive)
         {
             $collation = ' COLLATE NOCASE'
         }

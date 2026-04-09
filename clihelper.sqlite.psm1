@@ -72,7 +72,7 @@ class SqliteIndexConstraint : SqliteConstraint {
   SqliteIndexConstraint([IDictionary]$Definition) {
     $this.Name = $Definition['Name']
 
-    if (-not [string]::IsNullOrEmpty($Definition.Unique)) {
+    if (![string]::IsNullOrEmpty($Definition.Unique)) {
 
       [bool]$refValue = $this.Unique
       $null = [bool]::TryParse($Definition['Unique'], [ref]$refValue)
@@ -80,7 +80,7 @@ class SqliteIndexConstraint : SqliteConstraint {
       $this.Unique = $refValue
     }
 
-    if (-not [string]::IsNullOrEmpty($Definition.ifNotExists)) {
+    if (![string]::IsNullOrEmpty($Definition.ifNotExists)) {
       $null = [bool]::TryParse($Definition['ifNotExists'], [ref]$this.ifNotExists)
     }
 
@@ -96,15 +96,15 @@ class SqliteIndexConstraint : SqliteConstraint {
   }
 
   [void] ValidateDefinition() {
-    if (-not $this.Name) {
+    if (!$this.Name) {
       throw [System.ArgumentException]::new('Name is required for an index.')
     }
 
-    if (-not $this.Table) {
+    if (!$this.Table) {
       throw [System.ArgumentException]::new('The Table''s name is required.')
     }
 
-    if (-not $this.Columns -or $this.Columns.Count -eq 0) {
+    if (!$this.Columns -or $this.Columns.Count -eq 0) {
       throw [System.ArgumentException]::new('At least one column is required for the index.')
     }
   }
@@ -184,23 +184,23 @@ class SqliteForeignKeyTableConstraint : SqliteConstraint {
   }
 
   [void] ValidateDefinition() {
-    if (-not $this.Name) {
+    if (!$this.Name) {
       throw [System.ArgumentException]::new('Name is required for foreign key constraint.')
     }
 
-    if (-not $this.Table) {
+    if (!$this.Table) {
       throw [System.ArgumentException]::new('Table is required for foreign key constraint.')
     }
 
-    if (-not $this.ForeignTable) {
+    if (!$this.ForeignTable) {
       throw [System.ArgumentException]::new('ForeignTable is required for foreign key constraint.')
     }
 
-    if (-not $this.Columns -or $this.Columns.Count -eq 0) {
+    if (!$this.Columns -or $this.Columns.Count -eq 0) {
       throw [System.ArgumentException]::new('At least one column is required for foreign key constraint.')
     }
 
-    if (-not $this.ForeignColumns -or $this.ForeignColumns.Count -eq 0) {
+    if (!$this.ForeignColumns -or $this.ForeignColumns.Count -eq 0) {
       throw [System.ArgumentException]::new('At least one foreign column is required for foreign key constraint.')
     }
   }
@@ -217,16 +217,15 @@ class SqliteForeignKeyTableConstraint : SqliteConstraint {
     $null = $sb.Append(('    {0} (' -f $this.ForeignTable))
 
     $null = $sb.Append(('    {0})' -f ($this.ForeignColumns -join ', ')))
-    if (-not [string]::IsNullOrEmpty($this.OnUpdate) -or -not [string]::IsNullOrEmpty($this.OnDelete)) {
-      if (-not [string]::IsNullOrEmpty($this.OnUpdate)) {
+    if (![string]::IsNullOrEmpty($this.OnUpdate) -or ![string]::IsNullOrEmpty($this.OnDelete)) {
+      if (![string]::IsNullOrEmpty($this.OnUpdate)) {
         $null = $sb.AppendLine((' ON UPDATE {0}' -f $this.OnUpdate.ToUpper()))
       }
 
 
-      if (-not [string]::IsNullOrEmpty($this.OnDelete)) {
+      if (![string]::IsNullOrEmpty($this.OnDelete)) {
         $null = $sb.AppendLine((' ON DELETE {0}' -f $this.OnDelete.ToUpper()))
       }
-
     }
 
     # Add MATCH clause if needed
@@ -295,11 +294,11 @@ class SqliteCheckTableConstraint : SqliteConstraint {
   }
 
   [void] ValidateConstraint() {
-    if (-not $this.TableName) {
+    if (!$this.TableName) {
       throw "TableName is required for CHECK constraints."
     }
 
-    if (-not $this.CheckExpression) {
+    if (!$this.CheckExpression) {
       throw "CheckExpression is required for CHECK constraints."
     }
   }
@@ -342,7 +341,7 @@ class SQLiteColumn {
     # $null = [bool]::TryParse($Definition['PrimaryKey'], [ref]$this.PrimaryKey)
     # $this.PrimaryKeyOrder = $Definition['PrimaryKeyOrder']
 
-    if ($Definition.Keys -contains 'PrimaryKey' -and -not [string]::IsNullOrEmpty($Definition['PrimaryKey'])) {
+    if ($Definition.Keys -contains 'PrimaryKey' -and ![string]::IsNullOrEmpty($Definition['PrimaryKey'])) {
 
       #TryParse to handle cases where PrimaryKey is not a boolean
 
@@ -356,10 +355,9 @@ class SQLiteColumn {
 
         $this.PrimaryKeyOrder = 'NONE'
       }
-
     }
 
-    if ($Definition.Keys -contains 'AutoIncrement' -and -not [string]::IsNullOrEmpty($this.AutoIncrement) -and $this.Type -eq [SqliteType]::Integer) {
+    if ($Definition.Keys -contains 'AutoIncrement' -and ![string]::IsNullOrEmpty($this.AutoIncrement) -and $this.Type -eq [SqliteType]::Integer) {
       Write-Warning -Message ('AutoIncrement is only applicable to INTEGER PRIMARY KEY columns. Setting AutoIncrement to false for column {0}.' -f $this.Name)
 
       [bool]$refValue = $this.AutoIncrement
@@ -368,7 +366,7 @@ class SQLiteColumn {
       $this.AutoIncrement = $refValue
     }
 
-    if ($Definition.keys -contains 'AllowNull' -and -not [string]::IsNullOrEmpty($Definition['AllowNull'])) {
+    if ($Definition.keys -contains 'AllowNull' -and ![string]::IsNullOrEmpty($Definition['AllowNull'])) {
 
       #TryParse to handle cases where AllowNull is not a boolean
 
@@ -378,7 +376,7 @@ class SQLiteColumn {
       $this.AllowNull = $refValue
     }
 
-    if ($Definition.Keys -contains 'Unique' -and -not [string]::IsNullOrEmpty($Definition['Unique'])) {
+    if ($Definition.Keys -contains 'Unique' -and ![string]::IsNullOrEmpty($Definition['Unique'])) {
 
       #TryParse to handle cases where Unique is not a boolean
 
@@ -393,38 +391,38 @@ class SQLiteColumn {
       )
     }
 
-    if ($Definition.Keys -contains 'UniqueConflictClause' -and -not [string]::IsNullOrEmpty($Definition['UniqueConflictClause'])) {
+    if ($Definition.Keys -contains 'UniqueConflictClause' -and ![string]::IsNullOrEmpty($Definition['UniqueConflictClause'])) {
 
       $this.UniqueConflictClause = $Definition['UniqueConflictClause']
     }
 
-    if ($Definition.Keys -contains 'DefaultValue' -and -not [string]::IsNullOrEmpty($Definition['DefaultValue'])) {
+    if ($Definition.Keys -contains 'DefaultValue' -and ![string]::IsNullOrEmpty($Definition['DefaultValue'])) {
 
       $this.DefaultValue = $Definition['DefaultValue']
     }
 
-    if ($Definition.Keys -contains 'Collation' -and -not [string]::IsNullOrEmpty($Definition['Collation'])) {
+    if ($Definition.Keys -contains 'Collation' -and ![string]::IsNullOrEmpty($Definition['Collation'])) {
 
       $this.Collation = $Definition['Collation']
     }
 
-    if ($Definition.Keys -contains 'References' -and -not [string]::IsNullOrEmpty($Definition['References'])) {
+    if ($Definition.Keys -contains 'References' -and ![string]::IsNullOrEmpty($Definition['References'])) {
 
       $this.References = $Definition['References']
     }
 
-    if ($Definition.Keys -contains 'CheckExpression' -and -not [string]::IsNullOrEmpty($Definition['CheckExpression'])) {
+    if ($Definition.Keys -contains 'CheckExpression' -and ![string]::IsNullOrEmpty($Definition['CheckExpression'])) {
 
       $this.CheckExpression = $Definition['CheckExpression']
     }
   }
 
   [void] ValidateDefinition() {
-    if (-not $this.Name) {
+    if (!$this.Name) {
       throw [System.ArgumentException]::new('Column Name is required.')
     }
 
-    if (-not $this.Type) {
+    if (!$this.Type) {
       throw [System.ArgumentException]::new('Column Type is required.')
     }
 
@@ -456,18 +454,16 @@ class SQLiteColumn {
         #If the column is an INTEGER PRIMARY KEY, it is auto-incremented by default (alias for ROWID)
         $null = $sb.Append(' AUTOINCREMENT')
       }
-
-    } elseif (-not $this.AllowNull) {
+    } elseif (!$this.AllowNull) {
       $null = $sb.Append(' NOT NULL')
     } elseif ($this.Unique) {
       $null = $sb.Append(' UNIQUE')
       if ($this.UniqueConflictClause) {
         $null = $sb.Append((' ON CONFLICT {0}' -f $this.UniqueConflictClause))
       }
-
-    } elseif (-not [string]::IsNullOrEmpty($this.CheckExpression)) {
+    } elseif (![string]::IsNullOrEmpty($this.CheckExpression)) {
       $null = $sb.Append((' CHECK ({0})' -f $this.CheckExpression))
-    } elseif (-not [string]::IsNullOrEmpty($this.DefaultValue)) {
+    } elseif (![string]::IsNullOrEmpty($this.DefaultValue)) {
       if ($this.DefaultValue -is [string]) {
         $useDefaultValue = $this.DefaultValue.Replace("'", "''") # Escape single quotes in string literals
       } else {
@@ -517,7 +513,6 @@ class SqliteTable {
 
         $this.Columns += [SqliteColumn]::new($currentColumn)
       }
-
     }
 
     if ($Definition.keys -contains 'Strict') {
@@ -557,11 +552,8 @@ class SqliteTable {
           default {
             Write-Warning -Message ('Unknown constraint type {0} for table {1}. Skipping.' -f $constraint['Type'], $this.Name)
           }
-
         }
-
       }
-
     }
 
     if ($Definition.keys -contains 'Options') {
@@ -569,12 +561,11 @@ class SqliteTable {
 
         $this.Options = ($option -as [SQLiteTableOption[]])
       }
-
     }
   }
 
   [void] ValidateDefinition() {
-    if (-not $this.Name) {
+    if (!$this.Name) {
       throw [System.ArgumentException]::new('Table Name is required.')
     }
 
@@ -625,7 +616,6 @@ class SqliteTable {
       } else {
         $null = $sb.AppendLine('')
       }
-
     }
 
     $null = $sb.Append(')')
@@ -658,7 +648,6 @@ class SqliteDBSchema {
 
         $this.Tables += [SqliteTable]::new($currentTable)
       }
-
     }
 
     if ($Definition.Keys -contains 'Indexes') {
@@ -668,12 +657,11 @@ class SqliteDBSchema {
 
         $this.Indexes += [SqliteIndexConstraint]::new($currentIndex)
       }
-
     }
   }
 
   [void] ValidateDefinition() {
-    if (-not $this.Tables -or $this.Tables.Count -eq 0) {
+    if (!$this.Tables -or $this.Tables.Count -eq 0) {
       throw [System.ArgumentException]::new('At least one table is required in the schema.')
     }
 
@@ -685,7 +673,6 @@ class SqliteDBSchema {
       foreach ($index in $this.Indexes) {
         $index.ValidateDefinition()
       }
-
     }
   }
 
@@ -726,7 +713,7 @@ class SQLiteDBConfig {
   }
 
   SQLiteDBConfig([string]$StringInfo) {
-    if (-not (Test-Path -Path $StringInfo -PathType Leaf -IsValid)) {
+    if (!(Test-Path -Path $StringInfo -PathType Leaf -IsValid)) {
 
       #Test that the string is a valid connection string
       if ($StringInfo -notmatch '^Data Source=.*$') {
@@ -736,7 +723,6 @@ class SQLiteDBConfig {
         $this.ConnectionString = $StringInfo
         return
       }
-
     } else {
       $configFileObject = Get-Content -Path $StringInfo | ConvertFrom-Yaml -Ordered
 
@@ -776,7 +762,6 @@ class SQLiteDBConfig {
       } else {
         throw [System.ArgumentException]::new('DatabasePath and DatabaseFile must be set to construct a valid connection string.')
       }
-
     }
 
     if ($Definition.Keys -contains 'Version') {
@@ -791,7 +776,7 @@ class SQLiteDBConfig {
   }
 
   [string] GetDatabaseSDL() {
-    if (-not $this.Schema) {
+    if (!$this.Schema) {
       throw [System.InvalidOperationException]::new('Schema is not defined in the database configuration.')
     }
 
@@ -811,7 +796,7 @@ class SQLiteDBConfig {
     if ($this.databaseExists() -and $this.ConnectionString -notmatch ':memory:') {
       $DatabasePathFolder = Get-PSqliteAbsolutePath -Path $this.DatabasePath
       $dbFilePath = Join-Path -Path $DatabasePathFolder -ChildPath $this.DatabaseFile
-      if (-not (Test-Path -Path $dbFilePath -PathType Leaf)) {
+      if (!(Test-Path -Path $dbFilePath -PathType Leaf)) {
 
         #can't find the file but $this.databaseExists() returned true
         Write-Warning -Message ('Database path does not exist: {0}.' -f $dbFilePath)
@@ -819,7 +804,6 @@ class SQLiteDBConfig {
         Write-Verbose -Message ('Removing existing database file at {0}' -f $dbFilePath)
         Remove-Item -Path $dbFilePath -Force -ErrorAction Stop
       }
-
     } else {
       Write-Verbose -Message 'No existing database file to remove.'
     }
@@ -848,7 +832,6 @@ class SQLiteDBConfig {
       } catch {
         Write-Warning -Message 'Failed to close the database connection.'
       }
-
     }
   }
 
@@ -863,20 +846,19 @@ class SQLiteDBConfig {
   }
 
   hidden [void] createDatabase([bool]$Force, [bool]$SkipSchemaUpdate) {
-    if ($this.databaseExists() -and -not $Force) {
+    if ($this.databaseExists() -and !$Force) {
       throw [System.InvalidOperationException]::new('Database already exists. Use Force to overwrite.')
     } elseif ($this.databaseExists() -and $Force) {
 
       $this.removeDatabase()
     } else {
-      if (-not (Test-Path -Path $this.DatabasePath -PathType Container)) {
+      if (!(Test-Path -Path $this.DatabasePath -PathType Container)) {
         Write-Verbose -Message ('Creating database path at {0}' -f $this.DatabasePath)
         $null = New-Item -Path $this.DatabasePath -ItemType Directory -Force
       }
-
     }
 
-    if (-not $SkipSchemaUpdate) {
+    if (!$SkipSchemaUpdate) {
 
       $this.updateDBSchema()
     }
@@ -902,7 +884,7 @@ class SqliteHelper {
   # --- Configuration ---
   static [SQLiteDBConfig] GetSqliteDBConfig([string]$Path) {
     $absPath = [SqliteHelper]::GetAbsolutePath($Path)
-    if (-not (Test-Path -Path $absPath)) {
+    if (!(Test-Path -Path $absPath)) {
       throw [System.IO.FileNotFoundException]::new("Configuration file not found: $absPath")
     }
     return [SQLiteDBConfig]::new($absPath)
@@ -926,7 +908,7 @@ class SqliteHelper {
 
     if ($Force) { $MigrationMode = [DBMigrationMode]::OVERWRITE }
 
-    if (-not $Config.databaseExists()) {
+    if (!$Config.databaseExists()) {
       $Config.createDatabase()
     } else {
       # For simplicity in this refactor, we'll trigger update if versions differs or incremental is requested

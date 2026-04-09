@@ -126,7 +126,7 @@ function Invoke-PSqliteQuery
         finally
         {
             # Ensure the connection is closed
-            if ($SqliteConnection.State -eq 'Open' -and -not $keepAlive.IsPresent)
+            if ($SqliteConnection.State -eq 'Open' -and !$keepAlive.IsPresent)
             {
                 Write-Debug -Message "Closing SQLite connection & clearing pool."
                 $null = $SqliteConnection.Close()
@@ -216,7 +216,7 @@ function Invoke-PSqliteQuery
             }
         }
 
-        if (-not $PSBoundParameters.ContainsKey('CastAs'))
+        if (!$PSBoundParameters.ContainsKey('CastAs'))
         {
             $transformedResult
         }

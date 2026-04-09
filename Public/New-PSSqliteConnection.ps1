@@ -51,14 +51,14 @@ function New-PSqliteConnection {
       }
 
       'byDatabasePath' {
-        if (-not (Test-Path -Path $DatabasePath)) {
+        if (!(Test-Path -Path $DatabasePath)) {
           Write-Verbose "Database path '$DatabasePath' does not exist. Creating it."
           $null = New-Item -Path $DatabasePath -ItemType Directory -Force
         }
 
         # Construct the connection string from the database path
         $dataSource = Join-Path -Path $DatabasePath -ChildPath $DatabaseFile
-        if (-not (Test-Path -Path $dataSource)) {
+        if (!(Test-Path -Path $dataSource)) {
           Write-Verbose "Database file '$dataSource' does not exist. Creating a new one."
           $null = New-Item -Path $dataSource -ItemType File -Force
         }

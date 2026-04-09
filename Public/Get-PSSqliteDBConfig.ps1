@@ -33,7 +33,7 @@ function Get-PSqliteDBConfig
 
     $Path = Get-PSqliteAbsolutePath -Path $Path
 
-    if (-not (Test-Path -Path $Path))
+    if (!(Test-Path -Path $Path))
     {
         throw [System.IO.FileNotFoundException]::new("Configuration file not found: $Path")
     }

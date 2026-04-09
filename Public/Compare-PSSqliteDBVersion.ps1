@@ -21,7 +21,7 @@ function Compare-PSqliteDBVersion {
     PSTypeName        = 'chadnpc.PSqlite.DBVersionComparisonResult'
   }
 
-  if (-not $DatabaseConfig.databaseExists()) {
+  if (!$DatabaseConfig.databaseExists()) {
     Write-Verbose -Message 'Database does not exist. Returning default comparison result.'
     return [PSCustomObject]$result
   }

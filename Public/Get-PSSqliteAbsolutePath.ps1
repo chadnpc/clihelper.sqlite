@@ -53,10 +53,10 @@ function Get-PSqliteAbsolutePath {
     $RelativeTo
   )
 
-  if (-not [System.Io.Path]::IsPathRooted($RelativeTo)) {
+  if (![System.Io.Path]::IsPathRooted($RelativeTo)) {
     # If the path is not rooted it's a relative path
     $RelativeTo = Join-Path -Path ([System.Io.Path]::GetFullPath($PWD.Path)) -ChildPath $RelativeTo
-  } elseif (-not (Split-Path -IsAbsolute -Path $RelativeTo) -and [System.Io.Path]::IsPathRooted($RelativeTo)) {
+  } elseif (!(Split-Path -IsAbsolute -Path $RelativeTo) -and [System.Io.Path]::IsPathRooted($RelativeTo)) {
     # If the path is not Absolute but is rooted, it's starts with / or \ on Windows.
     # Add the Current PSDrive root
     $CurrentDriveRoot = $pwd.drive.root
@@ -68,10 +68,10 @@ function Get-PSqliteAbsolutePath {
     $RelativeTo = [System.io.Path]::GetFullPath($RelativeTo)
   }
 
-  if (-not [System.Io.Path]::IsPathRooted($Path)) {
+  if (![System.Io.Path]::IsPathRooted($Path)) {
     # If the path is not rooted it's a relative path (relative to $RelativeTo)
     $Path = Join-Path -Path $RelativeTo -ChildPath $Path
-  } elseif (-not (Split-Path -IsAbsolute -Path $Path) -and [System.Io.Path]::IsPathRooted($Path)) {
+  } elseif (!(Split-Path -IsAbsolute -Path $Path) -and [System.Io.Path]::IsPathRooted($Path)) {
     # If the path is not Absolute but is rooted, it's starts with / or \ on Windows.
     # Add the Current PSDrive root
     $CurrentDriveRoot = $pwd.drive.root

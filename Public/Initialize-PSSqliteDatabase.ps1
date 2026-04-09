@@ -60,7 +60,7 @@ function Initialize-PSqliteDatabase
     {
         'byPath'
         {
-            if (-not (Test-Path -Path $Path -PathType Leaf -IsValid))
+            if (!(Test-Path -Path $Path -PathType Leaf -IsValid))
             {
                 throw "The specified database configuration file does not exist: $Path"
             }
@@ -73,7 +73,7 @@ function Initialize-PSqliteDatabase
         'byConfig'
         {
             Write-Verbose -Message 'Using provided SQLiteDBConfig object.'
-            if (-not $DatabaseConfig -or $null -ne $DatabaseConfig.Schema.ValidateDefinition())
+            if (!$DatabaseConfig -or $null -ne $DatabaseConfig.Schema.ValidateDefinition())
             {
                 throw "Invalid SQLiteDBConfig object provided."
             }
@@ -92,7 +92,7 @@ function Initialize-PSqliteDatabase
     #  Compare the version of the config file with the database version in _metadata table
     #  init the db depending of the MigrationMode and comparison direction
     [bool] $shouldUpdateDB = $false
-    if (-not $DatabaseConfig.databaseExists())
+    if (!$DatabaseConfig.databaseExists())
     {
         Write-Verbose -Message 'No existing database found. Creating a new database.'
         $DatabaseConfig.createDatabase()
@@ -155,7 +155,7 @@ function Initialize-PSqliteDatabase
         'CREATE'
         {
             Write-Verbose -Message 'Migration mode is set to CREATE. Creating a new database if it does not exist.'
-            if ($shouldUpdateDB -and -not $DatabaseConfig.databaseExists())
+            if ($shouldUpdateDB -and !$DatabaseConfig.databaseExists())
             {
                 Write-Verbose -Message 'Creating a new database schema.'
                 $DatabaseConfig.createDatabase()

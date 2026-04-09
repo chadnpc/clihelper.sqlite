@@ -81,7 +81,7 @@ function Get-PSqliteDBConfigFile
     Write-Verbose -Message ('Searching for configuration file like {0}' -f $ConfigFile)
     $ConfigFile = (Get-ChildItem -Path $ConfigFile -ErrorAction Stop).FullName
 
-    if (-not (Test-Path -Path $ConfigFile))
+    if (!(Test-Path -Path $ConfigFile))
     {
         Write-Error -Message ('Configuration file not found: {0}' -f $ConfigFile)
     }

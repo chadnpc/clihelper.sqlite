@@ -66,13 +66,13 @@ function New-PSqliteRow
 
     begin
     {
-        if (-not $SqliteConnection)
+        if (!$SqliteConnection)
         {
             $SqliteConnection = New-PSqliteConnection -ConnectionString $SqliteDBConfig.ConnectionString
         }
 
         $tableDefinition = $SqliteDBConfig.Schema.tables.Where{$_.Name -eq $TableName}[0]
-        if (-not $tableDefinition)
+        if (!$tableDefinition)
         {
             throw [System.ArgumentException]::new("Table '$TableName' does not exist in the database schema.")
         }

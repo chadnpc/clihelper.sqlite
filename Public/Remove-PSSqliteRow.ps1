@@ -79,7 +79,7 @@ function Remove-PSqliteRow
 
     begin
     {
-        if (-not $SqliteConnection)
+        if (!$SqliteConnection)
         {
             $SqliteConnection = New-PSqliteConnection -ConnectionString $SqliteDBConfig.ConnectionString
         }
@@ -94,7 +94,7 @@ function Remove-PSqliteRow
         [System.Text.StringBuilder]$sb = [System.Text.StringBuilder]::new()
         $null = $sb.AppendLine(('DELETE FROM {0}' -f $TableName))
         $null = $sb.AppendLine(' WHERE 1=1')
-        if (-not $CaseSensitive)
+        if (!$CaseSensitive)
         {
             $collation = ' COLLATE NOCASE'
         }
@@ -164,7 +164,7 @@ function Remove-PSqliteRow
 
     end
     {
-        if (-not $KeepAlive)
+        if (!$KeepAlive)
         {
             try
             {

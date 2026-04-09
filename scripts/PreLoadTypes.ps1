@@ -37,7 +37,7 @@ $expectedRID = '{0}-{1}' -f $os, $arch
 $runtimesPath = [IO.Path]::Combine($libPath, 'runtimes')
 $osRuntimePath = [IO.Path]::Combine($runtimesPath, $expectedRID)
 $nativePath = [IO.Path]::Combine($osRuntimePath, 'native')
-if (-not (Test-Path -Path $nativePath)) {
+if (!(Test-Path -Path $nativePath)) {
   Write-Error -Message "Native path not found: $nativePath"
   return
 }
@@ -55,7 +55,7 @@ if ($env:Path -split ([io.path]::PathSeparator) -notcontains $nativePath) {
 $framework = if ($IsCoreCLR) { 'netstandard2.0' } else { 'netstandard2.0' } # or 'net461'
 $managedAssembliesFolder = [IO.Path]::Combine($libPath, $framework)
 Write-Debug -Message "Managed assemblies folder: $managedAssembliesFolder"
-if (-not (Test-Path -Path $managedAssembliesFolder)) {
+if (!(Test-Path -Path $managedAssembliesFolder)) {
   Write-Error -Message "Managed assemblies folder not found: $managedAssembliesFolder"
   return
 }

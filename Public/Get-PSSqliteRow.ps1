@@ -112,7 +112,7 @@ function Get-PSqliteRow
 
     begin
     {
-        if (-not $SqliteConnection)
+        if (!$SqliteConnection)
         {
             $SqliteConnection = New-PSqliteConnection -ConnectionString $SqliteDBConfig.ConnectionString
         }
@@ -127,7 +127,7 @@ function Get-PSqliteRow
         [System.Text.StringBuilder]$sb = [System.Text.StringBuilder]::new()
         $null = $sb.AppendLine(('SELECT * FROM {0}' -f $TableName))
         $null = $sb.AppendLine(' WHERE 1=1')
-        if (-not $CaseSensitive)
+        if (!$CaseSensitive)
         {
             $collation = ' COLLATE NOCASE'
         }
@@ -197,7 +197,7 @@ function Get-PSqliteRow
 
     end
     {
-        if (-not $KeepAlive)
+        if (!$KeepAlive)
         {
             try
             {
