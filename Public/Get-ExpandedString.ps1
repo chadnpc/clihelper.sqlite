@@ -1,12 +1,10 @@
-function Get-ExpandedString
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [string]
-        $String
-    )
+function Get-ExpandedString {
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]
+    $String
+  )
 
-    return $ExecutionContext.InvokeCommand.ExpandString($String)
+  return $ExecutionContext.InvokeCommand.ExpandString($String)
 }

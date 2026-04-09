@@ -38,60 +38,51 @@
         `Split-Path -IsAbsolute -Path '/src/`
         # $false
 #>
-function Get-PSqliteAbsolutePath
-{
-    [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [AllowNull()]
-        [System.String]
-        $Path,
+function Get-PSqliteAbsolutePath {
+  [CmdletBinding()]
+  [OutputType([System.String])]
+  param
+  (
+    [Parameter()]
+    [AllowNull()]
+    [System.String]
+    $Path,
 
-        [Parameter()]
-        [System.String]
-        $RelativeTo
-    )
+    [Parameter()]
+    [System.String]
+    $RelativeTo
+  )
 
-    if (-not [System.Io.Path]::IsPathRooted($RelativeTo))
-    {
-        # If the path is not rooted it's a relative path
-        $RelativeTo = Join-Path -Path ([System.Io.Path]::GetFullPath($PWD.Path)) -ChildPath $RelativeTo
-    }
-    elseif (-not (Split-Path -IsAbsolute -Path $RelativeTo) -and [System.Io.Path]::IsPathRooted($RelativeTo))
-    {
-        # If the path is not Absolute but is rooted, it's starts with / or \ on Windows.
-        # Add the Current PSDrive root
-        $CurrentDriveRoot = $pwd.drive.root
-        $RelativeTo = Join-Path -Path $CurrentDriveRoot -ChildPath $RelativeTo
-    }
+  if (-not [System.Io.Path]::IsPathRooted($RelativeTo)) {
+    # If the path is not rooted it's a relative path
+    $RelativeTo = Join-Path -Path ([System.Io.Path]::GetFullPath($PWD.Path)) -ChildPath $RelativeTo
+  } elseif (-not (Split-Path -IsAbsolute -Path $RelativeTo) -and [System.Io.Path]::IsPathRooted($RelativeTo)) {
+    # If the path is not Absolute but is rooted, it's starts with / or \ on Windows.
+    # Add the Current PSDrive root
+    $CurrentDriveRoot = $pwd.drive.root
+    $RelativeTo = Join-Path -Path $CurrentDriveRoot -ChildPath $RelativeTo
+  }
 
-    if ($PSVersionTable.PSVersion.Major -ge 7)
-    {
-        # This behave differently in 5.1 where * are forbidden. :(
-        $RelativeTo = [System.io.Path]::GetFullPath($RelativeTo)
-    }
+  if ($PSVersionTable.PSVersion.Major -ge 7) {
+    # This behave differently in 5.1 where * are forbidden. :(
+    $RelativeTo = [System.io.Path]::GetFullPath($RelativeTo)
+  }
 
-    if (-not [System.Io.Path]::IsPathRooted($Path))
-    {
-        # If the path is not rooted it's a relative path (relative to $RelativeTo)
-        $Path = Join-Path -Path $RelativeTo -ChildPath $Path
-    }
-    elseif (-not (Split-Path -IsAbsolute -Path $Path) -and [System.Io.Path]::IsPathRooted($Path))
-    {
-        # If the path is not Absolute but is rooted, it's starts with / or \ on Windows.
-        # Add the Current PSDrive root
-        $CurrentDriveRoot = $pwd.drive.root
-        $Path = Join-Path -Path $CurrentDriveRoot -ChildPath $Path
-    }
-    # Else The Path is Absolute
+  if (-not [System.Io.Path]::IsPathRooted($Path)) {
+    # If the path is not rooted it's a relative path (relative to $RelativeTo)
+    $Path = Join-Path -Path $RelativeTo -ChildPath $Path
+  } elseif (-not (Split-Path -IsAbsolute -Path $Path) -and [System.Io.Path]::IsPathRooted($Path)) {
+    # If the path is not Absolute but is rooted, it's starts with / or \ on Windows.
+    # Add the Current PSDrive root
+    $CurrentDriveRoot = $pwd.drive.root
+    $Path = Join-Path -Path $CurrentDriveRoot -ChildPath $Path
+  }
+  # Else The Path is Absolute
 
-    if ($PSVersionTable.PSVersion.Major -ge 7)
-    {
-        # This behave differently in 5.1 where * are forbidden. :(
-        $Path = [System.io.Path]::GetFullPath($Path)
-    }
+  if ($PSVersionTable.PSVersion.Major -ge 7) {
+    # This behave differently in 5.1 where * are forbidden. :(
+    $Path = [System.io.Path]::GetFullPath($Path)
+  }
 
-    return $Path
+  return $Path
 }

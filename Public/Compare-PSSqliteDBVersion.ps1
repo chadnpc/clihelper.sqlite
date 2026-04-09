@@ -1,8 +1,7 @@
 function Compare-PSqliteDBVersion {
   [CmdletBinding()]
   [OutputType([object])]
-  param
-  (
+  param(
     [Parameter(Mandatory = $true, Position = 0)]
     # Path to the database configuration file
     [SqliteDBConfig]
