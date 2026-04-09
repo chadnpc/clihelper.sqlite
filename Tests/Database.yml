@@ -1,0 +1,79 @@
+DatabasePath: .
+DatabaseFile: myDB.sqlite
+Version: 0.1.0 # only increment when the schema changes
+# types: INTEGER, REAL, TEXT, and BLOB.
+Schema:
+  Tables:
+    users:
+      columns:
+        id:
+          type: INTEGER
+          PrimaryKey: true
+          indexed: true
+
+        name:
+          type: TEXT
+          AllowNull: false # Creates a NOT NULL constraint on this column
+
+        age:
+          type: INTEGER
+          DefaultValue: 0 # Sets a default value for this column
+
+        email:
+          type: TEXT
+          unique: true # Creates a UNIQUE constraint on this column
+    Table1:
+      columns:
+        id:
+          type: INTEGER
+          PrimaryKey: true
+          indexed: true
+
+        column2:
+          type: TEXT
+          AllowNull: false # Creates a NOT NULL constraint on this column
+
+        column3:
+          type: REAL
+
+        column4:
+          type: BLOB
+      constraints:
+        - Type: INDEX
+          Name: index_name1
+          Unique: true
+          columns: ['column2', 'column3']
+        - NAME: table2_column2_fk
+          Type: ForeignKey
+          columns: ['column2']
+          ForeignTable: Table2
+          ForeignColumns: ['column1']
+    Table2:
+      constraints: []
+      columns:
+        id:
+          type: INTEGER
+          PrimaryKey: true
+          indexed: true
+
+        col1:
+          type: TEXT
+          AllowNull: false # Creates a NOT NULL constraint on this column
+          ForeignKey: 'Table1(column2)'
+
+        col2:
+          type: REAL
+  Indexes:
+    index1:
+      name: index_name2
+      table: Table1
+      columns: ['column2']
+      unique: true
+      ifNotExists: true
+      # schema: main.
+      # WHERE: column2 IS NOT NULL # for partial indexes
+
+    index2:
+      table: Table2
+      columns: ['col1']
+      unique: false
