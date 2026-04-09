@@ -479,8 +479,6 @@ class SQLiteColumn {
     }
 
     #endregion
-
-
     return $sb.ToString()
   }
 }
