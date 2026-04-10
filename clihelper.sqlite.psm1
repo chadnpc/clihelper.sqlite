@@ -820,7 +820,7 @@ class SQLiteDBConfig {
 
 [SQLiteDBConfig]$script:DBConfig = $null
 # Main class
-class SqliteHelper : PsModuleBase {
+class SqliteHelper {
   # --- Connection Management ---
   static [Microsoft.Data.Sqlite.SqliteConnection] NewConnection([string]$ConnectionString) {
     return [Microsoft.Data.Sqlite.SqliteConnection]::new($ConnectionString)
@@ -846,8 +846,8 @@ class SqliteHelper : PsModuleBase {
   }
 
   static [string] GetAbsolutePath([string]$Path) {
-    $upath = [System.IO.Path]::IsPathRooted($Path) ? $Path : [SqliteHelper]::GetUnResolvedPath($Path)
-    return $([IO.Path]::Exists($upath) ? $upath : [SqliteHelper]::GetResolvedPath($Path))
+    $upath = [System.IO.Path]::IsPathRooted($Path) ? $Path : [PsModuleBase]::GetUnResolvedPath($Path)
+    return $([IO.Path]::Exists($upath) ? $upath : [PsModuleBase]::GetResolvedPath($Path))
   }
 
   static [string] ExpandString([string]$String) {
