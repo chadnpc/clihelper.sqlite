@@ -948,7 +948,7 @@ class SqliteHelper {
       }
     }
 
-    return [SqliteHelper]::InvokeQuery($Connection, $sb.ToString(), $sqlParameters, 'PSCustomObject')
+    return [SqliteHelper]::InvokeSqliteQuery($Connection, $sb.ToString(), $sqlParameters, 'PSCustomObject')
   }
   static [PSCustomObject] NewRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$RowData) {
     return [SqliteHelper]::NewRow($Config, $TableName, $RowData, $null)
@@ -968,7 +968,7 @@ class SqliteHelper {
       $sqlParameters[($key -replace '[^a-zA-Z0-9]', '')] = $RowData[$key]
     }
 
-    $results = [SqliteHelper]::InvokeQuery($Connection, $sb.ToString(), $sqlParameters, 'PSCustomObject')
+    $results = [SqliteHelper]::InvokeSqliteQuery($Connection, $sb.ToString(), $sqlParameters, 'PSCustomObject')
     return if ($results.Count -gt 0) { $results[0] } else { $null }
   }
   static [void] SetRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$RowData, [hashtable]$ClauseData) {
@@ -998,7 +998,7 @@ class SqliteHelper {
       $sqlParameters[$pName] = $ClauseData[$key]
     }
 
-    [void][SqliteHelper]::InvokeQuery($Connection, $sb.ToString(), $sqlParameters)
+    [void][SqliteHelper]::InvokeSqliteQuery($Connection, $sb.ToString(), $sqlParameters)
   }
   static [void] RemoveRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$ClauseData) {
     [SqliteHelper]::RemoveRow($Config, $TableName, $ClauseData, $null)
@@ -1018,7 +1018,7 @@ class SqliteHelper {
       $sqlParameters[$pName] = $ClauseData[$key]
     }
 
-    [void][SqliteHelper]::InvokeQuery($Connection, $sb.ToString(), $sqlParameters)
+    [void][SqliteHelper]::InvokeSqliteQuery($Connection, $sb.ToString(), $sqlParameters)
   }
 }
 #endregion Classes

@@ -1,15 +1,4 @@
 function Get-SqliteDBMetadata {
-  <#
-    .SYNOPSIS
-        Gets the database's custom metadata (such as database schema version, which is not the engine/sqlite version).
-
-    .DESCRIPTION
-        This function retrieves the version of the SQLite database schema from the _metadata table that we use by convention.
-        We store the schema (yaml) version in the _metadata table, so we can track changes to the database schema over time.
-
-    .EXAMPLE
-        Get-SQLiteDBVersion -MetadataKey Version
-    #>
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -21,21 +10,37 @@ function Get-SqliteDBMetadata {
     $MetadataKey = @('*')
   )
 
-  try {
-    $metadataPresent = Invoke-SqliteQuery -SqliteConnection $SqliteConnection -CommandText 'SELECT name from sqlite_schema WHERE name = @name COLLATE NOCASE' -Parameters @{name = '_metadata' }
-    if ($metadataPresent) {
-      if ($MetadataKey -contains '*') {
-        $query = 'SELECT key, value from _metadata;'
-        $metadata = Invoke-SqliteQuery -SqliteConnection $SqliteConnection -CommandText $query -As OrderedDictionary
-      } else {
-        # If specific keys are requested, format the query accordingly
-        $query = 'SELECT key, value from _metadata WHERE key IN (''{0}'');' -f ($MetadataKey -join "','")
-        $metadata = Invoke-SqliteQuery -SqliteConnection $SqliteConnection -CommandText $query -As OrderedDictionary
-      }
+  $metadataPresent = [SqliteHelper]::InvokeSqliteQuery(
+    $SqliteConnection,
+    'SELECT name from sqlite_schema WHERE name = @name COLLATE NOCASE',
+    @{ name = '_metadata' },
+    'DataTable'
+  )
+
+  if (-not $metadataPresent -or $metadataPresent.Rows.Count -eq 0) {
+    return $null
+  }
+
+  if ($MetadataKey -contains '*') {
+    $query = 'SELECT key, value from _metadata;'
+    $rows = [SqliteHelper]::InvokeSqliteQuery($SqliteConnection, $query, @{}, 'PSCustomObject')
+  } else {
+    $placeholders = @()
+    $parameters = @{}
+    for ($i = 0; $i -lt $MetadataKey.Count; $i++) {
+      $pName = "k$i"
+      $placeholders += "@$pName"
+      $parameters[$pName] = $MetadataKey[$i]
     }
 
-    return $metadata
-  } catch {
-    Write-Error -Message "Failed to get SQLite DB metadata: $_"
+    $query = ('SELECT key, value from _metadata WHERE key IN ({0});' -f ($placeholders -join ', '))
+    $rows = [SqliteHelper]::InvokeSqliteQuery($SqliteConnection, $query, $parameters, 'PSCustomObject')
   }
+
+  $out = [System.Collections.Specialized.OrderedDictionary]::new()
+  foreach ($row in $rows) {
+    $out[$row.key] = $row.value
+  }
+
+  return $out
 }
