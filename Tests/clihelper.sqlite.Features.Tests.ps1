@@ -1,16 +1,6 @@
 ﻿BeforeDiscovery {
   $projectPath = "$($PSScriptRoot)\..\.." | Convert-Path
-
-  <#
-    If the QA tests are run outside of the build script (e.g with Invoke-Pester)
-    the parent scope has not set the variable $ProjectName.
-  #>
-  if (!$ProjectName) {
-    # Assuming project folder name is project name.
-    $ProjectName = Get-SamplerProjectName -BuildRoot $projectPath
-  }
-
-  $script:moduleName = $ProjectName
+  $script:moduleName = $projectPath
 
   Remove-Module -Name $script:moduleName -Force -ErrorAction SilentlyContinue
 
