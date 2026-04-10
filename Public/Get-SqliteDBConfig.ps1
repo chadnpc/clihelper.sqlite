@@ -29,7 +29,7 @@ function Get-SqliteDBConfig {
     $Path
   )
 
-  $Path = Get-PSqliteAbsolutePath -Path $Path
+  $Path = [SqliteHelper]::GetAbsolutePath($Path)
 
   if (!(Test-Path -Path $Path)) {
     throw [System.IO.FileNotFoundException]::new("Configuration file not found: $Path")

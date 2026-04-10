@@ -9,7 +9,7 @@ function Get-SqliteDBConfigFile {
     .DESCRIPTION
     This function constructs the expected path to the SQLite database configuration file
     based on the module's folder structure.
-    It looks for a file named '{ModuleName}.PSqliteConfig.yml' in the 'config' folder of the calling module.
+    It looks for a file named '{ModuleName}.SqliteConfig.yml' in the 'config' folder of the calling module.
 
     .PARAMETER ParentModuleBaseFolder
     The base folder of the parent module, typically the module that calls this function.
@@ -20,7 +20,7 @@ function Get-SqliteDBConfigFile {
 
     .PARAMETER ConfigFileName
     The name of the configuration file.
-    By default, it looks for a file named '{ModuleName}.PSqliteConfig.yml'.
+    By default, it looks for a file named '{ModuleName}.SqliteConfig.yml'.
     If the module name cannot be determined, it defaults to '*', which matches any file with the specified pattern.
 
     .EXAMPLE
@@ -50,7 +50,7 @@ function Get-SqliteDBConfigFile {
 
     [Parameter()]
     # Retrieves the file path for the Sqlite database configuration.
-    # By default, it looks for a file named '{ModuleName}.PSqliteConfig.yml' in the 'config' folder of the calling module.
+    # By default, it looks for a file named '{ModuleName}.SqliteConfig.yml' in the 'config' folder of the calling module.
     [string]
     $ConfigFolder = (Join-Path -Path $ParentModuleBaseFolder -ChildPath 'config'),
 
@@ -58,15 +58,15 @@ function Get-SqliteDBConfigFile {
     [string]
     $ConfigFileName = $(
       if ($moduleName = (((Get-PSCallStack)[0]).InvocationInfo.MyCommand.Module.Name)) {
-        '{0}.PSqliteConfig.y*ml' -f $moduleName
+        '{0}.SqliteConfig.y*ml' -f $moduleName
       } else {
-        '{0}.PSqliteConfig.y*ml' -f '*'
+        '{0}.SqliteConfig.y*ml' -f '*'
       }
     )
   )
 
   Write-Verbose -Message ('Retrieving SQLite configuration file from folder {0} ({1})' -f $ConfigFolder, $ParentModuleBaseFolder)
-  $ConfigFolder = Get-PSqliteAbsolutePath -Path $ConfigFolder
+  $ConfigFolder = [SqliteHelper]::GetAbsolutePath($ConfigFolder)
 
   Write-Verbose -Message ('Absolute path for config folder {0} ({1})' -f $ConfigFolder, $ParentModuleBaseFolder)
   $ConfigFile = Join-Path -Path $ConfigFolder -ChildPath $ConfigFileName

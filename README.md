@@ -32,7 +32,7 @@ Get-SqliteRow -SqliteDBConfig (Get-SqliteDBConfig -Path <path_to_config>) -Table
 
 ## NOTES
 
-  The module exposes type accelerators like [chadnpc.PSqlite.SQLiteDBConfig] and [chadnpc.PSqlite.SQLiteConnection]
+  The module exposes type accelerators like [Clihelper.Sqlite.SQLiteDBConfig] and [Clihelper.Sqlite.SQLiteConnection]
   for easy access to the configuration and connection objects used in the cmdlets, mapping to internal PS classes.
   When using the `using` statement, you can access these types directly in your scripts ([SqliteDBConfig] and [SQLiteConnection]).
 

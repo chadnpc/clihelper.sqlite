@@ -18,7 +18,7 @@ function Compare-SqliteDBVersion {
     'IsDeployed'      = $false
     'direction'       = '!='
     'Reasons'         = @()
-    PSTypeName        = 'chadnpc.PSqlite.DBVersionComparisonResult'
+    PSTypeName        = 'Clihelper.Sqlite.DBVersionComparisonResult'
   }
 
   if (!$DatabaseConfig.databaseExists()) {
