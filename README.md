@@ -8,13 +8,12 @@
 
 
 This module provides a set of cmdlets for working with SQLite databases in PowerShell.
-It allows you to perform CRUD (Create, Read, Update, Delete) operations on SQLite databases
-Using a simple and intuitive syntax, leveraging the Microsoft.Data.Sqlite library.
-The CRUD operations are designed to be easy to use, with support for various data formats
-such as DataTable, DataReader, DataSet, OrderedDictionary, and PSCustomObject, and do not
+It allows you to perform CRUD (Create, Read, Update, Delete) operations on SQLite databases Using a simple and intuitive syntax, leveraging the Microsoft.Data.Sqlite library.
+
+The CRUD operations are designed to be easy to use, with support for various data formats such as DataTable, DataReader, DataSet, OrderedDictionary, and PSCustomObject, and do not
 require the use of SQL queries directly, making it accessible for users who may not be familiar with SQL.
-When the basic feature set is not enough, you can use the
-`Invoke-SqliteQuery` cmdlet to execute raw SQL queries directly against the database.
+
+When the basic feature set is not enough, you can use the `Invoke-SqliteQuery` cmdlet to execute raw SQL queries directly against the database.
 
 ## Usage
 
