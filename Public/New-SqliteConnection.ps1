@@ -1,5 +1,5 @@
 using namespace Microsoft.Data.Sqlite
-function New-PSqliteConnection {
+function New-SqliteConnection {
   <#
     .SYNOPSIS
     Creates a new SQLite connection.
@@ -19,7 +19,7 @@ function New-PSqliteConnection {
     The name of the SQLite database file.
 
     .EXAMPLE
-    $connection = New-PSqliteConnection -ConnectionString 'Data Source=C:\path\to\database.db;'
+    $connection = New-SqliteConnection -ConnectionString 'Data Source=C:\path\to\database.db;'
     Creates a new SQLite connection using the specified connection string.
 
     .NOTES
@@ -27,8 +27,7 @@ function New-PSqliteConnection {
     #>
   [CmdletBinding(DefaultParameterSetName = 'byConnectionString')]
   [OutputType([Microsoft.Data.Sqlite.SqliteConnection])]
-  param
-  (
+  param (
     [Parameter(ParameterSetName = 'byConnectionString')]
     [string]
     $ConnectionString = 'Data Source=:memory:;Cache=Shared;',
@@ -66,7 +65,6 @@ function New-PSqliteConnection {
         $ConnectionString = 'Data Source={0};' -f $dataSource
       }
     }
-
     $connection = [SqliteConnection]::new($ConnectionString)
     return $connection
   } catch {

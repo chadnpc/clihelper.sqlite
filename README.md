@@ -14,7 +14,7 @@ The CRUD operations are designed to be easy to use, with support for various dat
 such as DataTable, DataReader, DataSet, OrderedDictionary, and PSCustomObject, and do not
 require the use of SQL queries directly, making it accessible for users who may not be familiar with SQL.
 When the basic feature set is not enough, you can use the
-`Invoke-PSqliteQuery` cmdlet to execute raw SQL queries directly against the database.
+`Invoke-SqliteQuery` cmdlet to execute raw SQL queries directly against the database.
 
 ## Usage
 
@@ -28,7 +28,7 @@ then
 Import-Module clihelper.sqlite
 
 # do stuff like:
-Get-PSqliteRow -SqliteDBConfig (Get-SqliteDBConfig -Path <path_to_config>) -TableName 'Employees' -ClauseData @{ Name = 'John Doe' } -As 'PSCustomObject'
+Get-SqliteRow -SqliteDBConfig (Get-SqliteDBConfig -Path <path_to_config>) -TableName 'Employees' -ClauseData @{ Name = 'John Doe' } -As 'PSCustomObject'
 ```
 
 ## NOTES

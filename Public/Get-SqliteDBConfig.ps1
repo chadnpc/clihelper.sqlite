@@ -1,6 +1,5 @@
-function Get-PSqliteDBConfig
-{
-    <#
+function Get-SqliteDBConfig {
+  <#
     .SYNOPSIS
     Retrieves the SQLiteDBConfig object from a specified configuration file.
 
@@ -14,30 +13,28 @@ function Get-PSqliteDBConfig
     If the file does not exist, an exception will be thrown.
 
     .EXAMPLE
-    $config = Get-PSqliteDBConfig -Path 'C:\path\to\config.json'
+    $config = Get-SqliteDBConfig -Path 'C:\path\to\config.json'
     Loads the SQLiteDBConfig from the specified JSON file.
 
     .NOTES
     This function is part of a module that provides configuration management for SQLite databases.
     It requires the SQLiteDBConfig class to be defined and available in the module.
-    The next step is to Initialize-PSqliteDatabase with the loaded configuration to make sure the schema is applied.
-    #>
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string]
-        [Alias('ConfigFile')]
-        $Path
-    )
+    The next step is to Initialize-SqliteDatabase with the loaded configuration to make sure the schema is applied.
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true, Position = 0)]
+    [string]
+    [Alias('ConfigFile')]
+    $Path
+  )
 
-    $Path = Get-PSqliteAbsolutePath -Path $Path
+  $Path = Get-PSqliteAbsolutePath -Path $Path
 
-    if (!(Test-Path -Path $Path))
-    {
-        throw [System.IO.FileNotFoundException]::new("Configuration file not found: $Path")
-    }
+  if (!(Test-Path -Path $Path)) {
+    throw [System.IO.FileNotFoundException]::new("Configuration file not found: $Path")
+  }
 
-    Write-Verbose -Message ('Loading SQLiteDBConfig from {0}' -f $Path)
-    return [SQLiteDBConfig]::new($Path)
+  Write-Verbose -Message ('Loading SQLiteDBConfig from {0}' -f $Path)
+  return [SQLiteDBConfig]::new($Path)
 }

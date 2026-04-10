@@ -1,4 +1,4 @@
-function Close-PSqliteConnection {
+function Close-SqliteConnection {
   <#
     .SYNOPSIS
         Closes the SQLite connections.
@@ -7,14 +7,13 @@ function Close-PSqliteConnection {
         This function closes all SQLite connection pools, effectively closing all active connections to the SQLite database.
 
     .EXAMPLE
-        Close-PSqliteConnection
+        Close-SqliteConnection
     #>
   [CmdletBinding()]
   [OutputType([void])]
-  param
-  (
+  param (
     # no parameter required
   )
 
-  [Microsoft.Data.Sqlite.SqliteConnection]::ClearAllPools()
+  [SqliteHelper]::CloseConnection()
 }

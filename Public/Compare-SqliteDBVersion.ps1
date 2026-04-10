@@ -1,4 +1,4 @@
-function Compare-PSqliteDBVersion {
+function Compare-SqliteDBVersion {
   [CmdletBinding()]
   [OutputType([object])]
   param(
@@ -27,8 +27,8 @@ function Compare-PSqliteDBVersion {
   }
 
   try {
-    $sqliteConnection = New-PSqliteConnection -ConnectionString $DatabaseConfig.ConnectionString
-    $metadata = Get-PSqliteDBMetadata -SqliteConnection $sqliteConnection -MetadataKey 'version' -ErrorAction Stop
+    $sqliteConnection = New-SqliteConnection -ConnectionString $DatabaseConfig.ConnectionString
+    $metadata = Get-SqliteDBMetadata -SqliteConnection $sqliteConnection -MetadataKey 'version' -ErrorAction Stop
   } catch {
     Write-Error -Message ('Failed to retrieve metadata from the database: {0}' -f $_.Exception.Message)
     $result['Reasons'] += ('Failed to retrieve metadata from the database: {0}' -f $_.Exception.Message)
