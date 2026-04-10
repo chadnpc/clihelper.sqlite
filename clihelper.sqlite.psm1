@@ -39,7 +39,7 @@ enum SqliteType {
 
 
 class SQLiteConstraint {
-  [SqliteConstraintType]$ConstraintType # e.g., 'INDEX', 'FOREIGNKEY', 'PRIMARYKEY', 'CHECK'
+  [SqliteConstraintType]$ConstraintType
 
   SQLiteConstraint() {
     # Default constructor
@@ -75,13 +75,13 @@ class SqliteIndexConstraint : SqliteConstraint {
     if (![string]::IsNullOrEmpty($Definition.Unique)) {
 
       [bool]$refValue = $this.Unique
-      $null = [bool]::TryParse($Definition['Unique'], [ref]$refValue)
+      [void][bool]::TryParse($Definition['Unique'], [ref]$refValue)
 
       $this.Unique = $refValue
     }
 
     if (![string]::IsNullOrEmpty($Definition.ifNotExists)) {
-      $null = [bool]::TryParse($Definition['ifNotExists'], [ref]$this.ifNotExists)
+      [void][bool]::TryParse($Definition['ifNotExists'], [ref]$this.ifNotExists)
     }
 
     $this.SchemaName = $Definition['SchemaName']
@@ -166,20 +166,16 @@ class SqliteForeignKeyTableConstraint : SqliteConstraint {
     $this.ForeignColumns = $Definition['ForeignColumns'] -as [string[]]
 
     if ($Definition.Keys -contains 'OnUpdate') {
-
       $this.OnUpdate = $Definition['OnUpdate']
     }
 
     if ($Definition.Keys -contains 'OnDelete') {
-
       $this.OnDelete = $Definition['OnDelete']
     }
 
     if ($Definition.Keys -contains 'Match') {
-
       $this.Match = $Definition['Match']
     }
-
     $this.ValidateDefinition()
   }
 
@@ -211,30 +207,27 @@ class SqliteForeignKeyTableConstraint : SqliteConstraint {
     # https://sqlite.org/syntax/table-constraint.html
     # https://sqlite.org/syntax/foreign-key-clause.html
     [System.Text.StringBuilder]$sb = [System.Text.StringBuilder]::new()
-    $null = $sb.AppendLine(('CONSTRAINT {0} FOREIGN KEY (' -f $this.Name))
-    $null = $sb.Append(('    {0}' -f ($this.Columns -join ', ')))
-    $null = $sb.AppendLine(') REFERENCES')
-    $null = $sb.Append(('    {0} (' -f $this.ForeignTable))
+    [void]$sb.AppendLine(('CONSTRAINT {0} FOREIGN KEY (' -f $this.Name))
+    [void]$sb.Append(('    {0}' -f ($this.Columns -join ', ')))
+    [void]$sb.AppendLine(') REFERENCES')
+    [void]$sb.Append(('    {0} (' -f $this.ForeignTable))
 
-    $null = $sb.Append(('    {0})' -f ($this.ForeignColumns -join ', ')))
+    [void]$sb.Append(('    {0})' -f ($this.ForeignColumns -join ', ')))
     if (![string]::IsNullOrEmpty($this.OnUpdate) -or ![string]::IsNullOrEmpty($this.OnDelete)) {
       if (![string]::IsNullOrEmpty($this.OnUpdate)) {
-        $null = $sb.AppendLine((' ON UPDATE {0}' -f $this.OnUpdate.ToUpper()))
+        [void]$sb.AppendLine((' ON UPDATE {0}' -f $this.OnUpdate.ToUpper()))
       }
 
-
       if (![string]::IsNullOrEmpty($this.OnDelete)) {
-        $null = $sb.AppendLine((' ON DELETE {0}' -f $this.OnDelete.ToUpper()))
+        [void]$sb.AppendLine((' ON DELETE {0}' -f $this.OnDelete.ToUpper()))
       }
     }
 
     # Add MATCH clause if needed
     if ($this.Match -and $this.Match -ne 'NONE') {
-      $null = $sb.AppendLine((' MATCH {0}' -f $this.Match.ToUpper()))
+      [void]$sb.AppendLine((' MATCH {0}' -f $this.Match.ToUpper()))
     }
-
-    $null = $sb.AppendLine(');')
-
+    [void]$sb.AppendLine(');')
     return $sb.ToString()
   }
 }
@@ -338,7 +331,7 @@ class SQLiteColumn {
   SQLiteColumn([IDictionary] $Definition) {
     $this.Name = $Definition['Name']
     $this.Type = $Definition['Type']
-    # $null = [bool]::TryParse($Definition['PrimaryKey'], [ref]$this.PrimaryKey)
+    # [void][bool]::TryParse($Definition['PrimaryKey'], [ref]$this.PrimaryKey)
     # $this.PrimaryKeyOrder = $Definition['PrimaryKeyOrder']
 
     if ($Definition.Keys -contains 'PrimaryKey' -and ![string]::IsNullOrEmpty($Definition['PrimaryKey'])) {
@@ -346,7 +339,7 @@ class SQLiteColumn {
       #TryParse to handle cases where PrimaryKey is not a boolean
 
       [bool]$refValue = $this.PrimaryKey
-      $null = [bool]::TryParse($Definition['PrimaryKey'], [ref]$refValue)
+      [void][bool]::TryParse($Definition['PrimaryKey'], [ref]$refValue)
 
       $this.PrimaryKey = $refValue
       if ($this.PrimaryKeyOrder -and $this.PrimaryKeyOrder -ne [SqliteOrdering]::None) {
@@ -358,33 +351,26 @@ class SQLiteColumn {
     }
 
     if ($Definition.Keys -contains 'AutoIncrement' -and ![string]::IsNullOrEmpty($this.AutoIncrement) -and $this.Type -eq [SqliteType]::Integer) {
-      Write-Warning -Message ('AutoIncrement is only applicable to INTEGER PRIMARY KEY columns. Setting AutoIncrement to false for column {0}.' -f $this.Name)
+      Write-Host ('[WARNING] AutoIncrement is only applicable to INTEGER PRIMARY KEY columns. Setting AutoIncrement to false for column {0}.' -f $this.Name)
 
       [bool]$refValue = $this.AutoIncrement
-      $null = [bool]::TryParse($Definition['AutoIncrement'], [ref]$refValue)
-
+      [void][bool]::TryParse($Definition['AutoIncrement'], [ref]$refValue)
       $this.AutoIncrement = $refValue
     }
 
     if ($Definition.keys -contains 'AllowNull' -and ![string]::IsNullOrEmpty($Definition['AllowNull'])) {
 
       #TryParse to handle cases where AllowNull is not a boolean
-
       [bool]$refValue = $this.AllowNull
-      $null = [bool]::TryParse($Definition['AllowNull'], [ref]$refValue)
-
+      [void][bool]::TryParse($Definition['AllowNull'], [ref]$refValue)
       $this.AllowNull = $refValue
     }
 
     if ($Definition.Keys -contains 'Unique' -and ![string]::IsNullOrEmpty($Definition['Unique'])) {
-
       #TryParse to handle cases where Unique is not a boolean
-
       [bool]$refValue = $this.Unique
       $result = [bool]::TryParse($Definition['Unique'], [ref]$refValue)
-
       $this.Unique = $refValue
-
       #Log the conversion result
       Write-Debug -Message (
         'Unique constraint for column {0} set to {1} should be {2} (conversion success: {3})' -f $this.Name, $this.Unique, $Definition['Unique'], $result
@@ -427,7 +413,7 @@ class SQLiteColumn {
     }
 
     if ($this.PrimaryKey -and $this.AllowNull) {
-      Write-Warning -Message ('Although SQLite allows this, we recommend that Primary key columns do not allow NULL values.')
+      Write-Host ('[WARNING] Although SQLite allows this, we recommend that Primary key columns do not allow NULL values.')
     }
   }
 
@@ -436,33 +422,33 @@ class SQLiteColumn {
     # Generate the column definition string
     # https://sqlite.org/syntax/column-def.html
     [System.Text.StringBuilder]$sb = [System.Text.StringBuilder]::new()
-    $null = $sb.Append(('{0} {1}' -f $this.Name, $this.Type.ToString().ToUpper()))
+    [void]$sb.Append(('{0} {1}' -f $this.Name, $this.Type.ToString().ToUpper()))
 
     #region Column Constraints
     # https://sqlite.org/syntax/column-constraint.html
     if ($this.PrimaryKey) {
-      $null = $sb.Append(' PRIMARY KEY')
+      [void]$sb.Append(' PRIMARY KEY')
       if ($this.PrimaryKeyOrder -and $this.PrimaryKeyOrder -ne [SqliteOrdering]::None) {
 
         #Append the order of the primary key if specified
-        $null = $sb.Append((' {0}' -f $this.PrimaryKeyOrder.ToString().ToUpper()))
+        [void]$sb.Append((' {0}' -f $this.PrimaryKeyOrder.ToString().ToUpper()))
       }
 
 
       if ($this.AutoIncrement -or $this.Type -eq [SqliteType]::Integer) {
 
         #If the column is an INTEGER PRIMARY KEY, it is auto-incremented by default (alias for ROWID)
-        $null = $sb.Append(' AUTOINCREMENT')
+        [void]$sb.Append(' AUTOINCREMENT')
       }
     } elseif (!$this.AllowNull) {
-      $null = $sb.Append(' NOT NULL')
+      [void]$sb.Append(' NOT NULL')
     } elseif ($this.Unique) {
-      $null = $sb.Append(' UNIQUE')
+      [void]$sb.Append(' UNIQUE')
       if ($this.UniqueConflictClause) {
-        $null = $sb.Append((' ON CONFLICT {0}' -f $this.UniqueConflictClause))
+        [void]$sb.Append((' ON CONFLICT {0}' -f $this.UniqueConflictClause))
       }
     } elseif (![string]::IsNullOrEmpty($this.CheckExpression)) {
-      $null = $sb.Append((' CHECK ({0})' -f $this.CheckExpression))
+      [void]$sb.Append((' CHECK ({0})' -f $this.CheckExpression))
     } elseif (![string]::IsNullOrEmpty($this.DefaultValue)) {
       if ($this.DefaultValue -is [string]) {
         $useDefaultValue = $this.DefaultValue.Replace("'", "''") # Escape single quotes in string literals
@@ -471,9 +457,9 @@ class SQLiteColumn {
       }
 
 
-      $null = $sb.Append((' DEFAULT {0}' -f $useDefaultValue))
+      [void]$sb.Append((' DEFAULT {0}' -f $useDefaultValue))
     } elseif ($this.Collation) {
-      $null = $sb.Append((' COLLATE {0}' -f $this.Collation))
+      [void]$sb.Append((' COLLATE {0}' -f $this.Collation))
     } elseif ($this.References) {
       $definition += " REFERENCES $($this.References)"
     }
@@ -498,9 +484,7 @@ class SqliteTable {
 
   SqliteTable([System.Collections.IDictionary]$Definition) {
     $this.Name = $Definition['Name']
-
     if ($Definition.Keys -contains 'Schema') {
-
       $this.Schema = $Definition['Schema']
     }
 
@@ -508,47 +492,31 @@ class SqliteTable {
       foreach ($columnName in $Definition['Columns'].keys) {
         $currentColumn = $Definition['Columns'][$columnName]
         $currentColumn['Name'] = $columnName
-
         $this.Columns += [SqliteColumn]::new($currentColumn)
       }
     }
 
     if ($Definition.keys -contains 'Strict') {
-
       $this.Strict = $Definition['Strict']
     }
-
     if ($Definition.keys -contains 'Constraints') {
-
       foreach ($constraint in $Definition['Constraints']) {
         $constraint['Table'] = $this.Name # Ensure the constraint has the table name set
         switch ($constraint['Type']) {
           'ForeignKey' {
-
             $this.Constraints += [SqliteForeignKeyTableConstraint]::new($constraint)
           }
-
-
           'Check' {
-
             $this.Constraints += [SqliteCheckTableConstraint]::new($constraint)
           }
-
-
           'PrimaryKey' {
-
             $this.Constraints += [SqlitePrimaryKeyTableConstraint]::new($constraint)
           }
-
-
           'Index' {
-
             $this.Constraints += [SqliteIndexConstraint]::new($constraint)
           }
-
-
           default {
-            Write-Warning -Message ('Unknown constraint type {0} for table {1}. Skipping.' -f $constraint['Type'], $this.Name)
+            Write-Host ('[WARNING] Unknown constraint type {0} for table {1}. Skipping.' -f $constraint['Type'], $this.Name)
           }
         }
       }
@@ -556,21 +524,17 @@ class SqliteTable {
 
     if ($Definition.keys -contains 'Options') {
       foreach ($option in $Definition['Options']) {
-
         $this.Options = ($option -as [SQLiteTableOption[]])
       }
     }
   }
-
   [void] ValidateDefinition() {
     if (!$this.Name) {
       throw [System.ArgumentException]::new('Table Name is required.')
     }
-
     if ($this.Columns.Count -eq 0) {
       throw [System.ArgumentException]::new('At least one column is required in the table definition.')
     }
-
     foreach ($column in $this.Columns) {
       $column.ValidateDefinition()
     }
@@ -581,46 +545,46 @@ class SqliteTable {
     # Generate the CREATE TABLE statement
     # https://sqlite.org/syntax/create-table-stmt.html
     [System.Text.StringBuilder]$sb = [System.Text.StringBuilder]::new()
-    $null = $sb.Append('CREATE')
+    [void]$sb.Append('CREATE')
     if ($this.Temporary) {
-      $null = $sb.Append(' TEMPORARY')
+      [void]$sb.Append(' TEMPORARY')
     }
 
-    $null = $sb.Append(' TABLE')
+    [void]$sb.Append(' TABLE')
 
     if ($this.ifNotExists) {
-      $null = $sb.Append(' IF NOT EXISTS ')
+      [void]$sb.Append(' IF NOT EXISTS ')
     }
 
     if ($this.Schema) {
-      $null = $sb.Append(('{0}.' -f $this.Schema))
+      [void]$sb.Append(('{0}.' -f $this.Schema))
     }
 
     # Append the table name
-    $null = $sb.Append((' {0}' -f $this.Name))
+    [void]$sb.Append((' {0}' -f $this.Name))
     # AS Select Statement goes here (not supported in this class yet)
 
     # Append the columns
-    $null = $sb.AppendLine(' (')
+    [void]$sb.AppendLine(' (')
 
     [int]$i = 0
     for ($i; $i -lt $this.Columns.Count; $i++) {
       Write-Verbose -Message ('Adding column {0} to table {1}' -f $this.Columns[$i].Name, $this.Name)
-      $null = $sb.Append(('    {0}' -f $this.Columns[$i].ToString()))
+      [void]$sb.Append(('    {0}' -f $this.Columns[$i].ToString()))
       if ($i -lt ($this.Columns.Count - 1)) {
 
         #There's more columns to append, and it's not the first one
-        $null = $sb.AppendLine(',')
+        [void]$sb.AppendLine(',')
       } else {
-        $null = $sb.AppendLine('')
+        [void]$sb.AppendLine('')
       }
     }
 
-    $null = $sb.Append(')')
+    [void]$sb.Append(')')
 
     if ($this.Options.Count -gt 0) {
-      $null = $sb.Append(' ')
-      $null = $sb.Append(($this.Options | ForEach-Object { $_.ToString() }) -join ', ')
+      [void]$sb.Append(' ')
+      [void]$sb.Append(($this.Options | ForEach-Object { $_.ToString() }) -join ', ')
     }
 
     $sb.AppendLine(';')
@@ -705,14 +669,13 @@ class SQLiteDBConfig {
   }
 
   SQLiteDBConfig([string]$DatabasePath, [string]$DatabaseFile) {
-    $this.DatabasePath = Get-PSqliteAbsolutePath -Path (Get-ExpandedString -String $DatabasePath)
-    $this.DatabaseFile = Get-ExpandedString -String $DatabaseFile
-    $this.ConnectionString = 'Data Source={0};' -f (Join-Path -Path $DatabasePath -ChildPath $DatabaseFile)
+    $this.DatabasePath = [SqliteHelper]::GetAbsolutePath([SqliteHelper]::ExpandString($DatabasePath))
+    $this.DatabaseFile = [SqliteHelper]::ExpandString($DatabaseFile)
+    $this.ConnectionString = 'Data Source={0};' -f ([IO.Path]::Combine($DatabasePath, $DatabaseFile))
   }
 
   SQLiteDBConfig([string]$StringInfo) {
-    if (!(Test-Path -Path $StringInfo -PathType Leaf -IsValid)) {
-
+    if (![IO.File]::Exists($StringInfo)) {
       #Test that the string is a valid connection string
       if ($StringInfo -notmatch '^Data Source=.*$') {
         throw "Invalid SQLite connection string format: $StringInfo"
@@ -733,29 +696,25 @@ class SQLiteDBConfig {
   }
 
   static [SQLiteDBConfig] Load([string]$ConfigFile) {
-    $ConfigFile = Get-PSqliteAbsolutePath -Path $ConfigFile
+    $ConfigFile = [SqliteHelper]::GetAbsolutePath($ConfigFile)
     return [SQLiteDBConfig]::new($ConfigFile)
   }
 
   hidden SetObjectProperties([System.Collections.IDictionary]$Definition) {
     if ($Definition.Keys -contains 'DatabasePath') {
-      $dbPath = Get-ExpandedString -String $Definition['DatabasePath']
-
-      $this.DatabasePath = Get-PSqliteAbsolutePath -Path $dbPath
+      $dbPath = [SqliteHelper]::ExpandString($Definition['DatabasePath'])
+      $this.DatabasePath = [SqliteHelper]::GetAbsolutePath($dbPath)
     }
 
     if ($Definition.Keys -contains 'DatabaseFile') {
-      $dbFile = Get-ExpandedString -String $Definition['DatabaseFile']
-
+      $dbFile = [SqliteHelper]::ExpandString($Definition['DatabaseFile'])
       $this.DatabaseFile = $dbFile
     }
 
     if ($Definition.Keys -contains 'ConnectionString') {
-
       $this.ConnectionString = $Definition['ConnectionString']
     } else {
       if ($this.DatabaseFile) {
-
         $this.ConnectionString = 'Data Source={0};' -f (Join-Path -Path $this.DatabasePath -ChildPath $this.DatabaseFile)
       } else {
         throw [System.ArgumentException]::new('DatabasePath and DatabaseFile must be set to construct a valid connection string.')
@@ -763,12 +722,10 @@ class SQLiteDBConfig {
     }
 
     if ($Definition.Keys -contains 'Version') {
-
       $this.Version = $Definition['Version']
     }
 
     if ($Definition.Keys -contains 'Schema') {
-
       $this.Schema = [SqliteDBSchema]::new($Definition['Schema'])
     }
   }
@@ -786,18 +743,18 @@ class SQLiteDBConfig {
       return $true
     } else {
       $dbFilePath = Join-Path -Path $this.DatabasePath -ChildPath $this.DatabaseFile
-      return (Test-Path -Path $dbFilePath -PathType Leaf)
+      return [IO.File]::Exists($dbFilePath)
     }
   }
 
   hidden [void] removeDatabase() {
     if ($this.databaseExists() -and $this.ConnectionString -notmatch ':memory:') {
-      $DatabasePathFolder = Get-PSqliteAbsolutePath -Path $this.DatabasePath
+      $DatabasePathFolder = [SqliteHelper]::GetAbsolutePath($this.DatabasePath)
       $dbFilePath = Join-Path -Path $DatabasePathFolder -ChildPath $this.DatabaseFile
-      if (!(Test-Path -Path $dbFilePath -PathType Leaf)) {
+      if (![IO.File]::Exists($dbFilePath)) {
 
         #can't find the file but $this.databaseExists() returned true
-        Write-Warning -Message ('Database path does not exist: {0}.' -f $dbFilePath)
+        Write-Host ('[WARNING] Database path does not exist: {0}.' -f $dbFilePath)
       } else {
         Write-Verbose -Message ('Removing existing database file at {0}' -f $dbFilePath)
         Remove-Item -Path $dbFilePath -Force -ErrorAction Stop
@@ -807,16 +764,16 @@ class SQLiteDBConfig {
     }
   }
 
-  hidden [void] updateDBSchema() {
+  hidden [void] UpdateDBSchema() {
     Write-Verbose -Message ('Creating database at {0}' -f (Join-Path -Path $this.DatabasePath -ChildPath $this.DatabaseFile))
     try {
-      $dbconnection = New-PSqliteConnection -ConnectionString $this.ConnectionString
+      $dbconnection = [SqliteHelper]::NewConnection($this.ConnectionString)
       $dbconnection.Open()
       Write-Verbose -Message 'Database connection opened successfully.'
       $dbcommand = $this.GetDatabaseSDL()
-      Invoke-PSqliteQuery -SqliteConnection $dbconnection -Query $dbcommand -ErrorAction Stop
-      Invoke-PSqliteQuery -SqliteConnection $dbconnection -Query 'CREATE TABLE IF NOT EXISTS _metadata (key TEXT PRIMARY KEY, value TEXT);' -ErrorAction Stop
-      Invoke-PSqliteQuery -SqliteConnection $dbconnection -Query ('INSERT OR REPLACE INTO _metadata (key, value) VALUES (''version'', ''{0}'');' -f $this.Version) -ErrorAction Stop
+      [SqliteHelper]::InvokeSqliteQuery($dbconnection, $dbcommand)
+      [SqliteHelper]::InvokeSqliteQuery($dbconnection, 'CREATE TABLE IF NOT EXISTS _metadata (key TEXT PRIMARY KEY, value TEXT);')
+      [SqliteHelper]::InvokeSqliteQuery($dbconnection, ('INSERT OR REPLACE INTO _metadata (key, value) VALUES (''version'', ''{0}'');' -f $this.Version))
       Write-Verbose -Message ('Database schema created successfully with version {0}.' -f $this.Version)
     } catch {
       throw [System.InvalidOperationException]::new('Failed to update database: ' + $_.Exception.Message)
@@ -824,11 +781,10 @@ class SQLiteDBConfig {
       try {
         $dbconnection.Close()
         $dbconnection.Dispose()
-
         [Microsoft.Data.Sqlite.SqliteConnection]::ClearAllPools()
         Write-Verbose -Message 'Database connection closed.'
       } catch {
-        Write-Warning -Message 'Failed to close the database connection.'
+        Write-Host 'Failed to close the database connection.'
       }
     }
   }
@@ -847,17 +803,15 @@ class SQLiteDBConfig {
     if ($this.databaseExists() -and !$Force) {
       throw [System.InvalidOperationException]::new('Database already exists. Use Force to overwrite.')
     } elseif ($this.databaseExists() -and $Force) {
-
       $this.removeDatabase()
     } else {
-      if (!(Test-Path -Path $this.DatabasePath -PathType Container)) {
+      if (![IO.Directory]::Exists($this.DatabasePath)) {
         Write-Verbose -Message ('Creating database path at {0}' -f $this.DatabasePath)
-        $null = New-Item -Path $this.DatabasePath -ItemType Directory -Force
+        New-Item -Path $this.DatabasePath -ItemType Directory -Force | Out-Null
       }
     }
 
     if (!$SkipSchemaUpdate) {
-
       $this.updateDBSchema()
     }
   }
@@ -866,12 +820,15 @@ class SQLiteDBConfig {
 
 [SQLiteDBConfig]$script:DBConfig = $null
 # Main class
-class SqliteHelper {
+class SqliteHelper : PsModuleBase {
   # --- Connection Management ---
   static [Microsoft.Data.Sqlite.SqliteConnection] NewConnection([string]$ConnectionString) {
     return [Microsoft.Data.Sqlite.SqliteConnection]::new($ConnectionString)
   }
 
+  static [void] CloseConnection() {
+    [Microsoft.Data.Sqlite.SqliteConnection]::ClearAllPools()
+  }
   static [void] CloseConnection([Microsoft.Data.Sqlite.SqliteConnection]$Connection) {
     if ($null -ne $Connection) {
       $Connection.Close()
@@ -882,17 +839,15 @@ class SqliteHelper {
   # --- Configuration ---
   static [SQLiteDBConfig] GetSqliteDBConfig([string]$Path) {
     $absPath = [SqliteHelper]::GetAbsolutePath($Path)
-    if (!(Test-Path -Path $absPath)) {
+    if (![IO.File]::Exists($absPath)) {
       throw [System.IO.FileNotFoundException]::new("Configuration file not found: $absPath")
     }
     return [SQLiteDBConfig]::new($absPath)
   }
 
   static [string] GetAbsolutePath([string]$Path) {
-    if ([System.IO.Path]::IsPathRooted($Path)) {
-      return $Path
-    }
-    return [System.IO.Path]::GetFullPath((Join-Path -Path (Get-Location).Path -ChildPath $Path))
+    $upath = [System.IO.Path]::IsPathRooted($Path) ? $Path : [SqliteHelper]::GetUnResolvedPath($Path)
+    return $([IO.Path]::Exists($upath) ? $upath : [SqliteHelper]::GetResolvedPath($Path))
   }
 
   static [string] ExpandString([string]$String) {
@@ -901,7 +856,13 @@ class SqliteHelper {
   }
 
   # --- Database Operations ---
-  static [void] InitializeSqliteDatabase([SQLiteDBConfig]$Config, [DBMigrationMode]$MigrationMode = [DBMigrationMode]::INCREMENTAL, [bool]$Force = $false) {
+  static [void] InitializeSqliteDatabase([SQLiteDBConfig]$Config) {
+    [SqliteHelper]::InitializeSqliteDatabase($Config, [DBMigrationMode]::INCREMENTAL)
+  }
+  static [void] InitializeSqliteDatabase([SQLiteDBConfig]$Config, [DBMigrationMode]$MigrationMode) {
+    [SqliteHelper]::InitializeSqliteDatabase($Config, $MigrationMode, $false)
+  }
+  static [void] InitializeSqliteDatabase([SQLiteDBConfig]$Config, [DBMigrationMode]$MigrationMode, [bool]$Force) {
     if ($null -eq $Config) { throw [ArgumentNullException]::new('Config') }
 
     if ($Force) { $MigrationMode = [DBMigrationMode]::OVERWRITE }
@@ -918,8 +879,10 @@ class SqliteHelper {
       }
     }
   }
-
-  static [object] InvokeSqliteQuery([Microsoft.Data.Sqlite.SqliteConnection]$Connection, [string]$Query, [hashtable]$Parameters = @{}, [string]$As = 'DataTable') {
+  static [object] InvokeSqliteQuery([Microsoft.Data.Sqlite.SqliteConnection]$Connection, [string]$Query) {
+    return [SqliteHelper]::InvokeSqliteQuery($Connection, $Query, @{}, 'DataTable')
+  }
+  static [object] InvokeSqliteQuery([Microsoft.Data.Sqlite.SqliteConnection]$Connection, [string]$Query, [hashtable]$Parameters = @{}, [string]$As) {
     if ($Connection.State -ne [System.Data.ConnectionState]::Open) {
       $Connection.Open()
     }
@@ -960,8 +923,10 @@ class SqliteHelper {
       $command.Dispose()
     }
   }
-
-  static [PSCustomObject[]] GetRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$ClauseData, [Microsoft.Data.Sqlite.SqliteConnection]$Connection = $null) {
+  static [PSCustomObject[]] GetRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$ClauseData) {
+    return [SqliteHelper]::GetRow($Config, $TableName, $ClauseData, $null)
+  }
+  static [PSCustomObject[]] GetRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$ClauseData, [Microsoft.Data.Sqlite.SqliteConnection]$Connection) {
     if ($null -eq $Connection) {
       $Connection = [SqliteHelper]::NewConnection($Config.ConnectionString)
     }
@@ -985,8 +950,10 @@ class SqliteHelper {
 
     return [SqliteHelper]::InvokeQuery($Connection, $sb.ToString(), $sqlParameters, 'PSCustomObject')
   }
-
-  static [PSCustomObject] NewRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$RowData, [Microsoft.Data.Sqlite.SqliteConnection]$Connection = $null) {
+  static [PSCustomObject] NewRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$RowData) {
+    return [SqliteHelper]::NewRow($Config, $TableName, $RowData, $null)
+  }
+  static [PSCustomObject] NewRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$RowData, [Microsoft.Data.Sqlite.SqliteConnection]$Connection) {
     if ($null -eq $Connection) {
       $Connection = [SqliteHelper]::NewConnection($Config.ConnectionString)
     }
@@ -1004,8 +971,10 @@ class SqliteHelper {
     $results = [SqliteHelper]::InvokeQuery($Connection, $sb.ToString(), $sqlParameters, 'PSCustomObject')
     return if ($results.Count -gt 0) { $results[0] } else { $null }
   }
-
-  static [void] SetRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$RowData, [hashtable]$ClauseData, [Microsoft.Data.Sqlite.SqliteConnection]$Connection = $null) {
+  static [void] SetRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$RowData, [hashtable]$ClauseData) {
+    [SqliteHelper]::SetRow($Config, $TableName, $RowData, $ClauseData, $null)
+  }
+  static [void] SetRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$RowData, [hashtable]$ClauseData, [Microsoft.Data.Sqlite.SqliteConnection]$Connection) {
     if ($null -eq $Connection) {
       $Connection = [SqliteHelper]::NewConnection($Config.ConnectionString)
     }
@@ -1031,8 +1000,10 @@ class SqliteHelper {
 
     [void][SqliteHelper]::InvokeQuery($Connection, $sb.ToString(), $sqlParameters)
   }
-
-  static [void] RemoveRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$ClauseData, [Microsoft.Data.Sqlite.SqliteConnection]$Connection = $null) {
+  static [void] RemoveRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$ClauseData) {
+    [SqliteHelper]::RemoveRow($Config, $TableName, $ClauseData, $null)
+  }
+  static [void] RemoveRow([SQLiteDBConfig]$Config, [string]$TableName, [hashtable]$ClauseData, [Microsoft.Data.Sqlite.SqliteConnection]$Connection) {
     if ($null -eq $Connection) {
       $Connection = [SqliteHelper]::NewConnection($Config.ConnectionString)
     }
