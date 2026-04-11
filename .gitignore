@@ -1,0 +1,8 @@
+﻿.env
+.env.local
+BuildOutput/
+LocalPSRepo/
+Tests/results.xml
+Tests/Resources/
+/.kilo/plans
+test.sqlite
