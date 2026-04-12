@@ -8,9 +8,18 @@ This module provides PowerShell classes and cmdlets for working with SQLite data
 
 ## Installation
 
-```PowerShell
-Install-Module clihelper.sqlite
-```
+  1. when in interactive pwsh session
+
+      ```PowerShell
+      Import-Module clihelper.sqlite
+      ```
+      or
+
+  2. when in your script, Add:
+
+      ```PowerShell
+      #Requires -Modules clihelper.sqlite,
+      ```
 
 ## Quick Start
 
