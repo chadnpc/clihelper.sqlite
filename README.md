@@ -8,6 +8,14 @@ This module provides PowerShell classes and cmdlets for working with SQLite data
 
 ## Installation
 
+```PowerShell
+Install-Module clihelper.sqlite
+```
+
+## Usage
+
+Get started:
+
   1. when in interactive pwsh session
 
       ```PowerShell
@@ -21,13 +29,9 @@ This module provides PowerShell classes and cmdlets for working with SQLite data
       #Requires -Modules clihelper.sqlite,
       ```
 
-## Quick Start
-
-In your script:
+then:
 
 ```PowerShell
-using module clihelper.sqlite
-
 # Create an in-memory connection
 $conn = [SqliteHelper]::NewConnection('Data Source=:memory:;Cache=Shared;')
 
